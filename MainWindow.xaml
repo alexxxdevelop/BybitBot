@@ -1,0 +1,203 @@
+﻿<Window x:Class="BybitBot.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BybitBot"
+        mc:Ignorable="d"
+        Style="{StaticResource WindowStyled}" Title="BybitBot 1.3" Height="683" Width="1366" WindowStartupLocation="CenterScreen" WindowState="Maximized" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="1" Height="30" BorderBrush="#000" BorderThickness="0" Background="#111">
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <ComboBox Grid.Column="1" Grid.Row="4" Name="exchange_cb" SelectedIndex="0" SelectionChanged="exchange_cb_SelectionChanged">
+                        <ComboBoxItem>Bybit</ComboBoxItem>
+                        <ComboBoxItem>Mexc</ComboBoxItem>
+                    </ComboBox>
+                    <Button Style="{StaticResource ToolBar}" Margin="10,0,10,0" Name="playButton" Click="playButton_Click" Visibility="Collapsed">
+                        <Image Source="Images/start.png"></Image>
+                    </Button>
+                    <Button Style="{StaticResource ToolBar}" Margin="10,0,10,0" Name="pauseButton" Visibility="Collapsed" Click="pauseButton_Click">
+                        <Image Source="Images/stop.png"></Image>
+                    </Button>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Style="{StaticResource ToolBar}" Margin="0,0,10,0" Name="clearLogButton" Click="clearLogButton_Click">Очистить лог</Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <TabControl Grid.Row="2">
+            <TabItem Header="Рабочая область">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.5*" />
+                        <ColumnDefinition Width="4*" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Header="Список api">
+                        <StackPanel>
+                            <Button x:Name="addApi" HorizontalAlignment="Left" Click="addApi_Click" Visibility="Collapsed">Добавить</Button>
+                            <ListBox x:Name="apis">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <CheckBox x:Name="activeApi" Tag="{Binding Path=Id}" IsChecked="{Binding Path=Active}" VerticalAlignment="Center" Click="activeApi_Click"></CheckBox>
+                                            <TextBlock Grid.Column="1" Text="{Binding Path=Name}" />
+                                            <TextBlock Grid.Column="2" Text="{Binding Path=ComissionS}" />
+                                            <TextBlock Grid.Column="3" Text="{Binding Path=Balance}" />
+                                            <Button Grid.Column="4" Style="{StaticResource ToolBar}" x:Name="editApi" Tag="{Binding Path=Id}" Click="editApi_Click">
+                                                <Image Source="Images/edit.png"></Image>
+                                            </Button>
+                                            <Button Grid.Column="5" Style="{StaticResource ToolBar}" x:Name="removeApi" Tag="{Binding Path=Id}" Click="removeApi_Click">
+                                                <Image Source="Images/remove.png"></Image>
+                                            </Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Grid.Column="1" Header="Позиции">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Column="1">Монета</TextBlock>
+                                <TextBlock Grid.Column="2">Направление</TextBlock>
+                                <TextBlock Grid.Column="3">Тип ордера</TextBlock>
+                                <TextBlock Grid.Column="4">Цена</TextBlock>
+                                <TextBlock Grid.Column="5">% от депозита</TextBlock>
+                                <TextBlock Grid.Column="6">Плечо</TextBlock>
+                                <TextBox Grid.Row="1" Grid.Column="1" x:Name="newOrderCoin">BTC</TextBox>
+                                <ComboBox Grid.Row="1" Grid.Column="2" x:Name="newOrderSide" SelectedIndex="0">
+                                    <ComboBoxItem>Buy</ComboBoxItem>
+                                    <ComboBoxItem>Sell</ComboBoxItem>
+                                </ComboBox>
+                                <ComboBox Grid.Row="1" Grid.Column="3" x:Name="newOrderType" SelectedIndex="0" SelectionChanged="newOrderType_SelectionChanged">
+                                    <ComboBoxItem>Market</ComboBoxItem>
+                                    <ComboBoxItem>Limit</ComboBoxItem>
+                                </ComboBox>
+                                <TextBox Grid.Row="1" Grid.Column="4" x:Name="newOrderPrice" IsEnabled="False"></TextBox>
+                                <TextBox Grid.Row="1" Grid.Column="5" x:Name="newOrderAmount">10</TextBox>
+                                <TextBox Grid.Row="1" Grid.Column="6" x:Name="newOrderLeverage">10</TextBox>
+                                <Button Grid.Row="1" Grid.Column="7" x:Name="newOrder" Click="newOrder_Click">Разместить</Button>
+                            </Grid>
+                            <DataGrid x:Name="dg_orders">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Тип" Binding="{Binding Path=Type}" />
+                                    <DataGridTextColumn Header="Монета" Binding="{Binding Path=Symbol}" />
+                                    <DataGridTextColumn Header="Напр." Binding="{Binding Path=Side}" />
+                                    <DataGridTextColumn Header="Количество" Binding="{Binding Path=Qty}" />
+                                    <DataGridTextColumn Header="Стоимость" Binding="{Binding Path=Value}" />
+                                    <DataGridTextColumn Header="Цена входа" Binding="{Binding Path=Price}" />
+                                    <DataGridTextColumn Header="Текущая цена" Binding="{Binding Path=MarketPrice}" />
+                                    <DataGridTextColumn Header="Нереализ.PnL" Binding="{Binding Path=UnrealizedPnl}" />
+                                    <DataGridTextColumn Header="Реализ.PnL" Binding="{Binding Path=RealizedPnl}" />
+                                    <DataGridTextColumn Header="Плечо" Binding="{Binding Path=Leverage}" />
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Margin="0" x:Name="actions" Tag="{Binding Path=Id}" Click="actions_Click">Действия</Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Grid.Column="2" Header="Монеты">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBox x:Name="coin" KeyUp="coin_KeyUp"></TextBox>
+                            <ListBox Grid.Row="1" x:Name="l_coins">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" x:Name="coinName" MouseEnter="coinName_MouseEnter"  MouseLeave="coinName_MouseLeave"  MouseLeftButtonDown="coinName_MouseLeftButtonDown" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Аналитика">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Name="updateHistory" HorizontalAlignment="Left" Click="updateHistory_Click">Обновить</Button>
+                        <TextBlock>Дополнительный фильтр:</TextBlock>
+                        <TextBlock>от</TextBlock>
+                        <DatePicker Name="date1" BorderThickness="0" IsTodayHighlighted="True" VerticalAlignment="Center" SelectedDateChanged="date1_SelectedDateChanged"></DatePicker>
+                        <ComboBox x:Name="time1" Width="70" SelectionChanged="date1_SelectedDateChanged"></ComboBox>
+                        <TextBlock>часов</TextBlock>
+                        <TextBlock Margin="20 5 5 5">до</TextBlock>
+                        <DatePicker Name="date2" BorderThickness="0" IsTodayHighlighted="True" VerticalAlignment="Center" SelectedDateChanged="date1_SelectedDateChanged"></DatePicker>
+                        <ComboBox x:Name="time2" Width="70" SelectionChanged="date1_SelectedDateChanged"></ComboBox>
+                        <TextBlock Margin="5 5 20 5">часов</TextBlock>
+                    </StackPanel>
+                    <DataGrid Grid.Row="1" x:Name="dg_history">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Api" Binding="{Binding Path=ApiName}" />
+                            <DataGridTextColumn Header="День" Binding="{Binding Path=Day}" />
+                            <DataGridTextColumn Header="Комиссия" Binding="{Binding Path=DayC}" />
+                            <DataGridTextColumn Header="Неделя" Binding="{Binding Path=Week}" />
+                            <DataGridTextColumn Header="Комиссия" Binding="{Binding Path=WeekC}" />
+                            <DataGridTextColumn Header="Месяц" Binding="{Binding Path=Month}" />
+                            <DataGridTextColumn Header="Комиссия" Binding="{Binding Path=MonthC}" />
+                            <DataGridTextColumn Header="Год" Binding="{Binding Path=Year}" />
+                            <DataGridTextColumn Header="Комиссия" Binding="{Binding Path=YearC}" />
+                            <DataGridTextColumn Header="Доп. фильтр" Binding="{Binding Path=Filter}" />
+                            <DataGridTextColumn Header="Комиссия" Binding="{Binding Path=FilterC}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        
+        <GridSplitter Grid.Row="3" HorizontalAlignment="Stretch" Height="2" Background="#555"></GridSplitter>
+        <RichTextBox Grid.Row="4" Name="log" AcceptsReturn="True" FontSize="12" IsReadOnly="True" FontFamily="Consolas"></RichTextBox>
+        <StatusBar Grid.Row="5">
+            <TextBlock>Последнее обновление:</TextBlock>
+            <TextBlock Name="lastUpdate"></TextBlock>
+        </StatusBar>
+    </Grid>
+</Window>
